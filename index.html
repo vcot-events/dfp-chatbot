@@ -217,7 +217,10 @@
   const GREETING = "Hello,\n\nThank you for contacting the Dialogue for Peace Information Center. I can share published program information and requirements. I do not determine individual eligibility. How may I assist you today?";
   const CLARIFY = "Which fellowship would you like information about: **student staff**, **professional staff**, or **faculty**?";
   const REPLIES = Object.freeze({
-    fallback: "I can share published Dialogue for Peace fellowship information. Please choose a fellowship or ask about requirements, applications, time commitments, or benefits.\n\n" + CONTACT,
+    fallback: "I couldn’t understand your message. Could you please rephrase it? I’m happy to help with Dialogue for Peace questions.",
+    hello: "Hello! I’m happy to help with Dialogue for Peace. What would you like to know?",
+    thanks: "You’re welcome! Let me know if you have another question about Dialogue for Peace.",
+    goodbye: "Thanks for stopping by. Take care!",
     boundary: "I can share published program information. I cannot help create discriminatory content or speak on behalf of program leadership.",
     welcome: "You are welcome to ask about Dialogue for Peace here. I share the same published program requirements with everyone and do not assess individual eligibility.\n\n" + CLARIFY,
     accommodations: "This information snapshot does not specify accommodation arrangements. Please contact Vanessa Haro at vlharo@ucsd.edu to ask about access needs and arrangements for the program or event. I cannot confirm particular services or guarantees.",
@@ -245,6 +248,9 @@
   }
 
   function classifyIntent(text) {
+    if (/^(?:hi|hello|hey|good (?:morning|afternoon|evening))[!. ]*$/.test(text)) return "hello";
+    if (/^(?:thanks(?: a lot| so much| for (?:your |the )?help)?|thank you(?: so much| for (?:your |the )?help)?)[!. ]*$/.test(text)) return "thanks";
+    if (/^(?:bye|goodbye|see you|take care)[!. ]*$/.test(text)) return "goodbye";
     if (/\b(complaint|harass(?:ment|ed)?|racis[mt]|discriminat(?:ion|ed|ory)|antisemiti(?:c|sm)|islamophobi(?:a|c)|homophobi(?:a|c)|transphobi(?:a|c)|slurs?|report (?:a |an |the )?(?:problem|concern|incident|issue))\b/.test(text)) return "concern";
     if (/\b(eligib(?:le|ile|ility)|eligble|eligab(?:le|ility)|qualif(?:y|ied|ications?)|requirements?|criteria|can i (?:apply|join)|who can (?:apply|join)|rejected?|prefer(?:ence)?|accept(?:ed)?)\b/.test(text)) return "requirements";
     if (/\b(accommodations?|accessib(?:le|ility)|assistive|wheelchair|mobility|sign[- ]language|interpreters?)\b/.test(text)) return "accommodations";
@@ -282,7 +288,7 @@
     const roleOnly = /^(?:(?:the|i am|i'm|im|a|an|for)\s+)*(?:student staff|student|professional staff|career staff|staff|faculty)(?:\s+(?:fellowship|program|member))?[.!?]*$/.test(text);
     const intent = classifyIntent(text) || (roleOnly ? context.pendingIntent || "overview" : null);
     if (!intent) return { text: REPLIES.fallback };
-    if (["concern", "accommodations", "boundary", "contact", "events"].includes(intent)) return { text: REPLIES[intent] };
+    if (["hello", "thanks", "goodbye", "concern", "accommodations", "boundary", "contact", "events"].includes(intent)) return { text: REPLIES[intent] };
     if (intent === "welcome") return { text: REPLIES.welcome };
     if (intent === "overview" && !program && !ambiguous) return { text: REPLIES.overview };
     if (!program) return { text: CLARIFY, program: null, pendingIntent: intent };
