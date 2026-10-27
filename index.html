@@ -79,6 +79,7 @@
   .msg.user .body { background: var(--bubble-user); color: #fff; border-bottom-right-radius: 2px; }
   .msg.bot  .body { background: var(--bubble-bot); border: 1px solid var(--line); border-bottom-left-radius: 2px; }
   .msg.bot.error .body { border-color: var(--danger); color: var(--danger); }
+  .msg.bot .body .checked-note { font-size: 12px; }
   .msg.bot .body a { color: var(--accent); font-weight: 600; }
   .cursor { display: inline-block; width: 8px; height: 15px; background: var(--accent);
             vertical-align: text-bottom; animation: blink 1s steps(1) infinite; }
@@ -320,7 +321,12 @@
       .replace(/\[([^\]]+)\]\((https:\/\/[^\s)]+)\)/g, (_, name, url) =>
         linkAllowed(url) ? `<a href="${url}" target="_blank" rel="noopener noreferrer">${name}</a>` : name)
       .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-      .split("\n").map((line) => line.replace(/^[-*]\s+/, "&bull; ")).join("<br>");
+      .split("\n").map((line) => {
+        if (line === `Information checked <strong>${VERIFIED_ON}</strong>.`) {
+          return `<small class="checked-note">${line}</small>`;
+        }
+        return line.replace(/^[-*]\s+/, "&bull; ");
+      }).join("<br>");
   }
 
   function addMsg(role, text) {
