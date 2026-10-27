@@ -16,3 +16,9 @@ Open `index.html` in a recent Chrome or Edge browser (WebGPU required).
 ## Hosting
 
 This is a static file, so it can be hosted on any static hosting service. GitHub Pages works as-is from this repository.
+
+## Regression checks
+
+Run `node --test tests/chat.test.cjs` with Node.js 18 or later. These checks use a mocked DOM and model stream to cover input controls, topic filtering, and resetting during generation without downloading model weights. Real WebGPU inference still requires a browser smoke test.
+
+The embedded staff fellowship dates and closed application status were checked against the official Staff Fellowship Program and 2026 Application pages on October 27, 2026. The knowledge base is a static snapshot and needs periodic review.
