@@ -128,6 +128,7 @@
   .send-btn:hover:not(:disabled) { background: #0a6650; }
   .send-btn:disabled { opacity: .45; cursor: default; }
   .send-btn.stop { background: var(--danger); }
+  .info-note { max-width: 760px; margin: 8px auto 0; font-size: 11px; color: var(--muted); text-align: center; }
   .hidden { display: none !important; }
   @media (max-width: 560px) {
     .brand .sub { display: none; }
@@ -144,229 +145,160 @@
     </div>
     <div>
       <h1>Dialogue for Peace Info Chatbot</h1>
-      <div class="sub" id="headStatus">Starting up...</div>
+      <div class="sub" id="headStatus">Published program information · checked October 27, 2026</div>
     </div>
   </div>
   <div class="spacer"></div>
-  <button class="icon-btn" id="newChatBtn" title="New chat" disabled aria-label="New chat">
+  <button class="icon-btn" id="newChatBtn" title="New chat" aria-label="New chat">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
   </button>
 </header>
 
 <main id="main">
-  <div class="load-box" id="loadBox">
-    <h2 class="load-welcome">Welcome to the Dialogue for Peace Chatbot Tool</h2>
-    <h2 id="loadTitle">Loading model</h2>
-    <div class="status" id="loadStatus">Preparing...</div>
-    <div class="bar"><div class="bar-fill" id="barFill"></div></div>
-  </div>
-
-  <div class="thread" id="thread"></div>
+  <div class="thread" id="thread" role="log" aria-label="Conversation" aria-live="polite" aria-relevant="additions"></div>
   <div class="suggestions hidden" id="suggestions"></div>
 </main>
 
 <footer>
   <div class="composer">
-    <textarea id="input" rows="1" placeholder="Type a message..." disabled
+    <textarea id="input" rows="1" placeholder="Type a message..." aria-label="Message" maxlength="2000"
               enterkeyhint="send"></textarea>
     <button class="send-btn" id="sendBtn" title="Send" disabled aria-label="Send">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 14 0"/><path d="m12 5 7 7-7 7"/></svg>
     </button>
   </div>
+  <p class="info-note">Published program information, not an individual eligibility assessment. Details may change; confirm with the program team.</p>
 </footer>
+<noscript>This chatbot needs JavaScript. For program information, visit <a href="https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/index.html">Dialogue for Peace</a> or email vlharo@ucsd.edu.</noscript>
 
-<script type="module">
-  const SYSTEM_PROMPT = `# Objective
-
-You are an exceptional customer support representative. Your objective is to answer questions and provide resources about Dialogue for Peace (https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/index.html), an initiative of Tritons Belong that encompasses several events and programs including a professional development training fellowship to empower student staff, faculty, and professional staff to become compassionate listeners and conflict resolution facilitators through Peacemaking and Restorative Justice-based curriculum.
-
-SCOPE RULE, HIGHEST PRIORITY: You may ONLY discuss Dialogue for Peace fellowships, programs, events, and application details found in the sources below. If a question is about anything else - definitions, general knowledge, other departments, or unrelated topics - do NOT answer it and do NOT use any outside knowledge. Instead, respond ONLY with a short polite message that the question is outside your scope and the user can contact Vanessa Haro at vlharo@ucsd.edu.
-
-Use these sources as well to respond:
-https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/dfp-faculty-fellowship.html
-https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/dfp-faculty-app-2026.html
-https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/dfp-staff-fellowship.html
-https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/student-training-fellowship.html
-
-ALLOWED LINKS RULE: You may ONLY link to the exact URLs listed in this prompt. Never invent, guess, abbreviate, or modify any URL. Use these exact links with these names:
-- [Dialogue for Peace](https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/index.html)
-- [Faculty Fellowship Program](https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/dfp-faculty-fellowship.html)
-- [Staff Fellowship Program](https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/dfp-staff-fellowship.html)
-- [Student Fellowship Program](https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/student-training-fellowship.html)
-- [Staff Fellowship 2026 Application](https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/application-staff-2026.html)
-- [Faculty Fellowship 2026 Application](https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/dfp-faculty-app-2026.html)
-
-Use FAQs for further reference:
-
-Faculty FAQ:
-What is the Dialogue for Peace Faculty Professional Development Fellowship Program?
-We are looking for faculty employed by UC San Diego through the end of Fall quarter of the same year as training who are passionate about learning conflict resolution skills, exploring different perspectives, and building empathy.
-What are the main goals of the program?
-Empower faculty to facilitate community dialogue and understand how to implement Peacemaking and Restorative Justice practices within their own departments, classrooms, laboratories, studios or communities contributing to a positive campus climate.
-What will I learn as a Dialogue For Peace Fellow?
-By the end of the program, faculty will develop skills to facilitate open and meaningful conversations, gain a deep understanding of the principles and practices of Peacemaking and Restorative Justice, and create their own final project.
-What is the time commitment?
-Five 2 hour in-person sessions once per week on Fridays in Spring quarter. Complete a peer facilitation project in Fall quarter, as well as, present their final project at a to be determined date and time. Full attendance at all sessions is required.
-What are the benefits of participating in the program?
-DFP Fellowships are professional development opportunities where faculty connect with their peers, learn hands-on from experienced professionals, and foster community and belonging on their campus. The program includes lunch socials to strengthen these relationships, and culminates in a final session where the group will celebrate completion of the program and receive further coaching on their project. Faculty will receive $5,000 in discretionary funds following the completion of training sessions and project proposal in Spring quarter, as well as, eight Triton Cash Cards to incentivize participation in their final project rollout.
-What is the peer facilitation project?
-Each fellow will design and implement a peer facilitation project on campus, applying their newly acquired skills to benefit their community. Further details are outlined in the curriculum and training sessions to be shared upon acceptance into the program.
-
-Student FAQ:
-What is the Dialogue for Peace Student Fellowship Program?
-The Student Fellows Program is a five-week journey designed to help student staff build facilitation skills and learn how to collaborate with others across different perspectives.
-Who can apply for the DFP Fellows Program?
-We are looking for undergraduate or graduate students currently employed by UC San Diego and have an active employee ID number through the final presentation date who are passionate about building empathy, exploring different perspectives, and learning conflict resolution skills.
-What are the main goals of the program?
-Empower student leaders to facilitate community dialogue and understand how to implement Peacemaking and Restorative Justice practices within their own communities contributing to a positive campus climate.
-What will I learn as a Dialogue For Peace Fellow?
-By the end of the program, students will gain a deep understanding of the principles of Peacemaking and Restorative Justice, develop skills for open and meaningful conversations, and create their own peer facilitation projects.
-What is the time commitment?
-Fellows must attend five weekly two-hour sessions and complete a peer facilitation project by the end of Winter Quarter, as well as, present their final project at a luncheon event. Training sessions in person on Thursdays from 4:00-6:00 pm. Complete a peer facilitation project in Winter quarter, as well as, present their project in spring quarter.
-What are the benefits of participating in the program?
-DFP Fellowships are paid professional development opportunities where students connect with their peers, learn hands-on from experienced professionals, and foster community and belonging on your campus. The program includes weekly dinner socials to strengthen these relationships, and culminates in a final session where the group will celebrate completion of the program and receive further coaching on their project. Students will receive $600 in compensation for their time, $250 toward the development of their project, as well as credit on their co-curricular record for their participation in the program. Full attendance and completion of a final project are required to receive the $600 and co-curricular credit.
-What is the peer facilitation project?
-Each Fellow will design and implement a peer facilitation project on campus, applying their newly acquired skills to benefit their community.
-
-Dialogue for Peace launched a new event series called Deliberation events that occur over a meal. Our Deliberation events are inspired by the community building and dialogue circle aspects of the Deliberation Dinner model at the University of Wisconsin-Madison.
-
-Recent deliberation event: Dialogue for Peace Inaugural Staff Deliberation Lunch.
-As staff members at UC San Diego, we invite you to our inaugural Deliberation Lunch event where Dialogue for Peace staff fellows will facilitate candid dialogue about the impact of artificial intelligence on the lives of UC San Diego staff. Lunch and beverages will be served.
-Date: Wednesday, July 22, 2026
-Program Time: 11:00 am to 1:00 pm (Doors open at 10:30 am)
-Location: Atkinson Pavilion at the Ida and Cecil Green Faculty Club.
-The Dialogue for Peace (DFP) team for our inaugural Deliberation Lunch event. Together, fellows and staff participants will engage in candid dialogue about the impact of artificial intelligence (AI) in their lives as UC San Diego staff members. Our time will be guided by the values of intentional listening for understanding, respect, and learning from each other in order to ultimately deepen a culture of care on campus. DFP Staff Fellows are invited to facilitate discussions with staff in small circles, helping to guide thoughtful and inclusive conversations. Fellows will support participants in sharing their perspectives, asking meaningful questions, and engaging respectfully with differing viewpoints. Event attendees will include staff leaders from across campus, offering fellows the opportunity to facilitate dynamic, cross-community dialogue and foster meaningful connections among participants.
-
-Event dated October 27, 2026: Becoming a Restorative Campus: Fostering Community Building and Dialogue, a talk featuring David Karp, PhD, Professor & Director, Center for Restorative Justice, Kroc School of Peace Studies, University of San Diego.
-Date: Tuesday, October 27, 2026. Time: 4:00 pm to 6:00 pm (Doors open at 3:30 pm). Location: 15th Floor Terrace at Seventh College, Tower West, Building 1. (Source: official Dialogue for Peace event flyer.) Registration details, cost, and any other information about this event are not included in the sources; for those questions, direct users to Vanessa Haro at vlharo@ucsd.edu.
-
-Staff FAQ (Staff Fellowship Program and 2026 Application; verified October 27, 2026):
-What is the Dialogue for Peace Staff Fellowship Program?
-We are looking for full time career staff employed by UC San Diego through the 2026-2027 academic year who are passionate about building empathy, exploring different perspectives, and learning conflict resolution skills. Fellows are required to:
-- Attend training sessions in person on UC San Diego general campus on Monday, September 14, 2026, 9:00 AM to 4:00 PM, Tuesday, September 15, 2026, 9:00 AM to 4:00 PM, and Wednesday, September 16, 2026, 9:00 AM to 1:00 PM
-- Complete a peer facilitation project in Winter 2027, as well as, present their project in Spring 2027 at a to be determined date and time.
-Current Time Commitment: Two seven-hour days and one four-hour day of in-person training and project work time on main UC San Diego campus. Two hours to attend and present projects in-person at a 2027 luncheon (date and time to be determined). Implementation of project that includes time to rollout project by the end of Winter Quarter 2027: Session 1: Monday, September 14, 2026, 9:00 a.m. to 4:00 p.m, Session 2: Tuesday, September 15, 2026, 9:00 a.m. to 4:00 p.m., Session 3: Wednesday, September 16, 2026, 9:00 a.m. to 1:00 p.m., Final Peer Facilitation Project - Rollout by the end of Winter Quarter 2027, Spring 2027 Presentation (date and time to be determined).
-Qualifications: Must be a current full-time career staff employed at UC San Diego through the end of the 2026-2027 academic year.
-Staff benefits: professional development, daily lunch socials, peer connections, and $250 toward the final project.
-Staff application status verified October 27, 2026: the Staff Fellowship Program page says applications and nominations are closed. The 2026 application deadline was August 31, 2026. No future application window is confirmed. Direct questions about future cohorts to Vanessa Haro. Historical application details: https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/application-staff-2026.html
-
-# Style
-
-Your communication style should be highly professional, warm, and polite. Format every response as follows:
-- Open with a one-sentence direct answer to the question.
-- Use short headers (bold or ##) only when the answer has more than one topic.
-- Use bullet points for requirements, dates, steps, and benefits. Keep each bullet to one line when possible.
-- Bold key details such as dates, times, locations, deadlines, and dollar amounts.
-- Put links on their own line under a "Helpful Links" heading, written as [descriptive name](URL) rather than raw URLs.
-- Keep responses under 150 words unless the user asks for more detail.
-- Do not repeat the question back to the user.
-- End with one short line offering further help, with Vanessa Haro's email only when it's relevant.
-- Never repeat a fact within one answer, and never dump the whole FAQ - answer only the topic asked.
-- NEVER structure an answer as steps. Never write "Step 1", "Step 2", or any numbered-step headers. Bulleted requirement lists ARE allowed when the user asks how to join, apply, or about eligibility. A "what is" question gets a 1-2 sentence definition only - no goals, requirements, time commitment, or benefits unless asked.
-
-Every conversation opens with this exact greeting, which is already displayed to the user before their first message: "Hello, Thank you for contacting the Dialogue for Peace Information Center. How may I assist you today?" Do not repeat the greeting.
-
-# Ground rules
-
-Follow these rules strictly:
-1. Only answer using information contained in the provided sources/knowledge base. Do not use outside knowledge, training data, or assumptions to fill gaps.
-2. Every factual claim in your response must be traceable to a specific source. When you answer, cite which document/source the information came from (e.g., "According to [Source Name]...").
-3. If the answer isn't in the provided sources, or you cannot confirm the information for certain, say so explicitly: "I don't have information on that in the sources provided" or "I can't confirm that for certain," and direct the user to contact Vanessa Haro, Dialogue for Peace Project Manager, at vlharo@ucsd.edu. Never provide information that may be wrong. Do not guess, infer beyond what's stated, or generate plausible-sounding content to fill the gap.
-4. If a question is only partially answered by the sources, answer only the part that's supported and flag the part that isn't.
-5. Do not combine or extrapolate from multiple sources to create a new claim that no single source states directly.
-6. If sources conflict, note the conflict rather than picking one silently.
-7. Never fabricate quotes, statistics, names, dates, or citations. If you're not certain a detail is in the source, omit it rather than risk inaccuracy.
-
-# Other rules
-
-For every user question, consult the embedded knowledge base above. There is no live browsing or external knowledge lookup tool. Your answer MUST be supported by that embedded knowledge base. If a user asks questions beyond the scope of your objective topic, do not address these queries. Instead, kindly redirect them to contact the project manager for Dialogue for Peace, Vanessa Haro, Strategic Initiatives Manager, at vlharo@ucsd.edu. Do not include a note in the responses about the sources provided for your answers.
-
-EXAMPLE 1 - copy this structure exactly for every "what is" question:
-User: What is the Dialogue for Peace Faculty Fellowship?
-Correct response:
-The Dialogue for Peace Faculty Fellowship is a professional development program that trains UC San Diego faculty to become compassionate listeners and conflict resolution facilitators through Peacemaking and Restorative Justice.
-
-Helpful Links
-[Faculty Fellowship Program](https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/dfp-faculty-fellowship.html)
-
-I'd be happy to share more about the time commitment or benefits if you'd like.
-(Note: this example is the ENTIRE response - no steps, no extra sections, nothing else.)
-
-EXAMPLE 2 - copy this structure exactly for every "how do I join / how do I apply" question:
-User: How do I join the Dialogue for Peace Staff Fellowship?
-Correct response:
-Applications for the 2026 Staff Fellowship are closed; the deadline was **August 31, 2026**.
-**Requirements:**
-- Must be a current full-time career staff member at UC San Diego through the end of the 2026-2027 academic year
-- Attend in-person training on **September 14-16, 2026** on the UC San Diego main campus
-- Complete your peer facilitation project by the end of **Winter Quarter 2027**
-- Present your project in **Spring 2027**
-- The application deadline was **Monday, August 31, 2026**; no future window is confirmed
-
-Helpful Links
-[Staff Fellowship 2026 Application](https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/application-staff-2026.html)
-
-For future application opportunities, contact Vanessa Haro at vlharo@ucsd.edu.
-
-FINAL REMINDER, HIGHEST PRIORITY: keep every answer under 150 words and follow the response format exactly: one-sentence direct answer first, one-line bullets for details, bold key dates and amounts, links under a "Helpful Links" heading as [name](URL), and one short closing line offering further help. If the question is not about Dialogue for Peace, reply only with the short out-of-scope redirect to vlharo@ucsd.edu. Never repeat facts. Never list the FAQ contents.`;
+<script>
+  // All assistant prose is authored here. User text selects an intent; it is never
+  // interpolated into an answer, evaluated, or sent to a language model.
+  const VERIFIED_ON = "October 27, 2026";
+  const CONTACT = "For program questions, contact Vanessa Haro at vlharo@ucsd.edu.";
+  const HOME = "https://transformation.ucsd.edu/our-work/community-belonging-and-dialogue/tritons-belong/dialogue-for-peace/index.html";
+  const PROGRAMS = Object.freeze({
+    staff: Object.freeze({
+      name: "Professional Staff Fellowship",
+      source: "https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/dfp-staff-fellowship.html",
+      overview: "The Professional Staff Fellowship offers training in dialogue facilitation, Peacemaking, and Restorative Justice, followed by a peer facilitation project.",
+      requirements: "- Current full-time career staff at UC San Diego, employed through the **2026–2027 academic year**.\n- Interest in empathy and understanding different perspectives; organized and dependable.",
+      status: "As of **October 27, 2026**, the published staff application and nomination window is **closed**. No future window is confirmed in this information snapshot.",
+      commitment: "The published 2026 cohort trained on **September 14 and 15, 9 a.m.–4 p.m.**, and **September 16, 9 a.m.–1 p.m.** Project completion is in **Winter 2027**, with presentation in **Spring 2027** (date to be determined).",
+      benefits: "The published benefits include **$250 in project funding**, facilitation training, peer connections, and lunch socials. Project funding is distinct from a personal stipend.",
+    }),
+    faculty: Object.freeze({
+      name: "Faculty Fellowship",
+      source: "https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/dfp-faculty-fellowship.html",
+      overview: "The Faculty Fellowship develops dialogue facilitation and conflict resolution skills using Peacemaking and Restorative Justice in academic communities.",
+      requirements: "- UC San Diego faculty employed through the **end of Fall 2026**, for the published 2026 cohort.\n- Interest in empathy, different perspectives, and conflict resolution.",
+      status: "The published faculty information describes the **2026 cohort**. This snapshot does not confirm a new application window. Contact the program team for current application details.",
+      commitment: "The published 2026 cohort had five in-person Friday sessions in **April and May 2026** at the Ida and Cecil Green Faculty Club. Full attendance and a peer facilitation project are required; check the source for exact session times and project details.",
+      benefits: "Published benefits include **$5,000 in discretionary funding after the final project presentation in Fall 2026**, plus **eight $25 Triton Cash Cards** for project participant incentives.",
+    }),
+    student: Object.freeze({
+      name: "Student Staff Fellowship",
+      source: "https://transformation.ucsd.edu/our-work/community-belonging-and-dialogue/tritons-belong/dialogue-for-peace/student-staff-fellowship.html",
+      overview: "The Student Staff Fellowship offers five sessions in dialogue facilitation, Peacemaking, and Restorative Justice, with a peer facilitation project.",
+      requirements: "- Continuing undergraduate or graduate student currently employed at UC San Diego, with an active employee ID.\n- Interest in empathy and different perspectives; organized and dependable.",
+      status: "As of **October 27, 2026**, the published student staff application and nomination window is **closed**. This snapshot does not confirm a future window.",
+      commitment: "The published commitment is **five weekly two-hour sessions**, a peer facilitation project, and a final project presentation at a luncheon. Contact the program team for cohort-specific dates.",
+      benefits: "Published benefits include **$600 compensation** for training and project work, **$250 in project funding**, co-curricular record credit, and weekly dinners.",
+    }),
+  });
 
   const STARTERS = [
     "What is the Dialogue for Peace Faculty Fellowship?",
     "What is the Student Fellowship time commitment?",
     "What are the benefits of the Staff Fellowship?",
+    "What are the published fellowship requirements?",
   ];
+  const GREETING = "Hello,\n\nThank you for contacting the Dialogue for Peace Information Center. I can share published program information and requirements. I do not determine individual eligibility. How may I assist you today?";
+  const CLARIFY = "Which fellowship would you like information about: **student staff**, **professional staff**, or **faculty**?";
+  const REPLIES = Object.freeze({
+    fallback: "I can share published Dialogue for Peace fellowship information. Please choose a fellowship or ask about requirements, applications, time commitments, or benefits.\n\n" + CONTACT,
+    boundary: "I can share published program information. I cannot help create discriminatory content or speak on behalf of program leadership.\n\n" + CONTACT,
+    welcome: "You are welcome to ask about Dialogue for Peace here. I share the same published program requirements with everyone and do not assess individual eligibility.\n\n" + CLARIFY,
+    accommodations: "This information snapshot does not specify accommodation arrangements. Please contact Vanessa Haro at vlharo@ucsd.edu to ask about access needs and arrangements for the program or event. I cannot confirm particular services or guarantees.",
+    concern: "I’m sorry to hear about your concern. You can contact Vanessa Haro at vlharo@ucsd.edu about a Dialogue for Peace program or event concern. This chatbot does not investigate reports or confirm complaint procedures, confidentiality, or outcomes.",
+    contact: CONTACT,
+    events: "For event listings and updates, please check the official Dialogue for Peace page. This information snapshot cannot confirm current event availability, registration, or access arrangements.\n\n[Dialogue for Peace](" + HOME + ")\n\n" + CONTACT,
+    overview: "Dialogue for Peace is a Tritons Belong initiative offering fellowships and events that build dialogue, listening, and conflict resolution skills through Peacemaking and Restorative Justice.\n\n" + CLARIFY + "\n\n[Dialogue for Peace](" + HOME + ")",
+  });
 
-  const GREETING =
-    "Hello,\n\nThank you for contacting the Dialogue for Peace Information Center. How may I assist you today?";
-
-  // Broad words such as "staff" alone do not establish a DFP conversation.
-  const DFP_TOPIC = /\b(dialogue for peace|dfp|d4p|fellowships?|peacemaking|restorative justice|deliberation|karp|haro)\b/i;
-  const PROGRAM_QUESTION = /\b(apply|application|eligible|eligibility|benefits?|commitment|stipend|compensation|deadline|training|project|sessions?)\b/i;
-  const FOLLOW_UP = /^(?:(?:am i|are we|is (?:it|this|that)) eligible|how (?:much|long)|where (?:is|are|does|do)|when (?:is|are|does|do)|what (?:are|is) (?:the |its )?(?:requirements|benefits|cost|deadline|time commitment)|(?:can|how do) i apply|tell me more|what about)\b/i;
-
-  function isOnTopic(text) {
-    const t = text.trim();
-    if (DFP_TOPIC.test(t)) return true;
-    if (/\b(faculty|staff|student)\b/i.test(t) && PROGRAM_QUESTION.test(t)) return true;
-    return state.messages.some((message) => message.role === "user") && FOLLOW_UP.test(t);
+  function normalize(text) {
+    return text.normalize("NFKC").replace(/[\u200B-\u200D\uFEFF]/g, "").toLowerCase().replace(/[’‘]/g, "'").trim();
   }
 
-  function currentSystemPrompt() {
-    const date = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "America/Los_Angeles", year: "numeric", month: "2-digit", day: "2-digit",
-    }).format(new Date());
-    return SYSTEM_PROMPT + `\nCurrent date in America/Los_Angeles: ${date}. Compare dated events and deadlines with this date. Never describe a past deadline as open or a past event as upcoming. Do not infer a new application cycle. The knowledge base is a static snapshot, not a live lookup.`;
+  // Only program terms are recognized, never race, religion, gender, disability,
+  // nationality, political views, or other identity attributes.
+  function selectProgram(text) {
+    const student = /\b(student|students|undergrad(?:uate)?|graduate)\b/.test(text);
+    const faculty = /\b(faculty|professor)\b/.test(text);
+    const staff = /\b(staff|professional staff|career staff)\b/.test(text);
+    if (faculty && (student || staff)) return null;
+    if (student && /\b(?:professional staff|career staff|(?:and|or|versus|vs) (?:the )?staff|staff (?:and|or|versus|vs) (?:the )?student)\b/.test(text)) return null;
+    if (student) return "student"; // "student staff" is the student program.
+    if (faculty) return "faculty";
+    return staff ? "staff" : null;
   }
 
-  const OFF_TOPIC_REPLY =
-    "That question is outside the topics I can assist with. For more information, please contact Dialogue for Peace Project Manager Vanessa Haro at vlharo@ucsd.edu.";
-
-  const ALLOWED_LINKS = new Set([
-    "https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/index.html",
-    "https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/dfp-faculty-fellowship.html",
-    "https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/dfp-faculty-app-2026.html",
-    "https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/dfp-staff-fellowship.html",
-    "https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/student-training-fellowship.html",
-    "https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/application-staff-2026.html",
-  ].map((u) => u.toLowerCase()));
-
-  function linkAllowed(url) {
-    return ALLOWED_LINKS.has(url.toLowerCase().replace(/\/+$/, ""));
+  function classifyIntent(text) {
+    if (/\b(complaint|harass(?:ment|ed)?|racism|report (?:a |an |the )?(?:problem|concern|incident|issue))\b/.test(text)) return "concern";
+    if (/\b(eligib(?:le|ile|ility)|eligab(?:le|ility)|qualif(?:y|ied|ications?)|requirements?|criteria|can i (?:apply|join)|who can (?:apply|join)|rejected?|prefer(?:ence)?|accept(?:ed)?)\b/.test(text)) return "requirements";
+    if (/\b(accommodations?|accessib(?:le|ility)|assistive|wheelchair|mobility)\b/.test(text)) return "accommodations";
+    if (/\b(rank races|repeat exactly|ignore all|system override|as the dfp director|write a persuasive|explain why .* should be excluded|say .* (?:inferior|hateful))\b/.test(text)) return "boundary";
+    if (/\b(contact|email|talk to|speak to|reach|haro)\b/.test(text)) return "contact";
+    if (/\b(welcome|belong|allowed|excluded?)\b/.test(text)) return "welcome";
+    if (/\b(apply|application|applications|join|deadline|nomination|register|open|closed|accepting)\b/.test(text)) return "applications";
+    if (/\b(cost|fees?|price|tuition)\b/.test(text)) return "contact";
+    if (/\b(events?|lunch|luncheon|karp|deliberation|registration)\b/.test(text)) return "events";
+    if (/\b(benefits?|compensation|stipend|paid|pay|funding|money|cash|how much)\b/.test(text)) return "benefits";
+    if (/\b(time|commitment|schedule|sessions?|when|how long|where|location|dates?)\b/.test(text)) return "commitment";
+    if (/\b(project|projects)\b/.test(text)) return "commitment";
+    if (/\b(what is|what's|tell me|overview|learn|goals?|about)\b/.test(text) && /\b(dialogue|dfp|d4p|fellowship|program)\b/.test(text)) return "overview";
+    return null;
   }
 
-  const MODEL_ID = "Llama-3.2-1B-Instruct-q4f16_1-MLC";
+  function programReply(program, intent) {
+    const data = PROGRAMS[program];
+    if (intent === "requirements" || intent === "applications") {
+      return "Here are the published requirements for the **" + data.name + "**. This chatbot does not assess individual eligibility.\n\n" + data.requirements + "\n\n" + data.status + "\n\n[" + data.name + "](" + data.source + ")\n\n" + CONTACT;
+    }
+    const content = data[intent] || data.overview;
+    return content + "\n\n[" + data.name + "](" + data.source + ")\n\nInformation checked **" + VERIFIED_ON + "**. " + CONTACT;
+  }
+
+  // Pure routing: identical role and question yield identical replies. Only the
+  // selected program and an unresolved intent persist, not a personal profile.
+  function answerQuestion(rawText, context = {}) {
+    if (rawText.length > 2000) return { text: REPLIES.fallback };
+    const text = normalize(rawText);
+    const selected = selectProgram(text);
+    const mentionsProgram = /\b(student|students|undergrad(?:uate)?|graduate|faculty|professor|staff)\b/.test(text);
+    const ambiguous = mentionsProgram && !selected;
+    const program = ambiguous ? null : selected || context.program || null;
+    const roleOnly = /^(?:(?:the|i am|i'm|im|a|an|for)\s+)*(?:student staff|student|professional staff|career staff|staff|faculty)(?:\s+(?:fellowship|program|member))?[.!?]*$/.test(text);
+    const intent = classifyIntent(text) || (roleOnly ? context.pendingIntent || "overview" : null);
+    if (!intent) return { text: REPLIES.fallback };
+    if (["concern", "accommodations", "boundary", "contact", "events"].includes(intent)) return { text: REPLIES[intent] };
+    if (intent === "welcome") return { text: REPLIES.welcome };
+    if (intent === "overview" && !program && !ambiguous) return { text: REPLIES.overview };
+    if (!program) return { text: CLARIFY, program: null, pendingIntent: intent };
+    return { text: programReply(program, intent), program, pendingIntent: null };
+  }
+
+  const ALLOWED_LINKS = new Set([HOME, ...Object.values(PROGRAMS).map((data) => data.source)]);
+  function linkAllowed(url) { return ALLOWED_LINKS.has(url); }
+
   const $ = (id) => document.getElementById(id);
   const main = $("main"), thread = $("thread"), suggestions = $("suggestions"),
-        loadBox = $("loadBox"), loadTitle = $("loadTitle"), loadStatus = $("loadStatus"),
-        barFill = $("barFill"), input = $("input"), sendBtn = $("sendBtn"),
-        newChatBtn = $("newChatBtn"), headStatus = $("headStatus");
+        input = $("input"), sendBtn = $("sendBtn"), newChatBtn = $("newChatBtn");
+  const state = { program: null, pendingIntent: null };
 
-  const state = { engine: null, busy: false, generating: false, messages: [], conversationId: 0 };
-  let webllm = null;
-
-  function showSuggestions() {
+  function showSuggestions(choices = STARTERS) {
     suggestions.innerHTML = "";
-    STARTERS.forEach((text) => {
+    choices.forEach((text) => {
       const chip = document.createElement("button");
       chip.className = "chip";
       chip.textContent = text;
@@ -376,31 +308,19 @@ FINAL REMINDER, HIGHEST PRIORITY: keep every answer under 150 words and follow t
     suggestions.classList.remove("hidden");
   }
 
-  function setHead(text) { headStatus.textContent = text; }
-
   function autoGrow() {
     input.style.height = "auto";
     input.style.height = Math.min(input.scrollHeight, 140) + "px";
   }
-  input.addEventListener("input", () => { autoGrow(); refreshSend(); });
+  function refreshSend() { sendBtn.disabled = !input.value.trim(); }
 
-  function refreshSend() {
-    const hasText = input.value.trim().length > 0;
-    if (state.generating) {
-      sendBtn.disabled = false;
-      sendBtn.classList.add("stop");
-      sendBtn.title = "Stop generating";
-      sendBtn.setAttribute("aria-label", "Stop generating");
-      sendBtn.querySelector("svg").innerHTML =
-        '<rect x="6" y="6" width="12" height="12" rx="2"/>';
-    } else {
-      sendBtn.disabled = !(hasText && state.engine && !state.busy);
-      sendBtn.classList.remove("stop");
-      sendBtn.title = "Send";
-      sendBtn.setAttribute("aria-label", "Send");
-      sendBtn.querySelector("svg").innerHTML =
-        '<path d="m5 12 14 0"/><path d="m12 5 7 7-7 7"/>';
-    }
+  function formatMarkdown(text) {
+    const escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    return escaped
+      .replace(/\[([^\]]+)\]\((https:\/\/[^\s)]+)\)/g, (_, name, url) =>
+        linkAllowed(url) ? `<a href="${url}" target="_blank" rel="noopener noreferrer">${name}</a>` : name)
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .split("\n").map((line) => line.replace(/^[-*]\s+/, "&bull; ")).join("<br>");
   }
 
   function addMsg(role, text) {
@@ -413,12 +333,9 @@ FINAL REMINDER, HIGHEST PRIORITY: keep every answer under 150 words and follow t
     body.className = "body";
     if (role === "user") {
       body.textContent = text;
-    } else {
-      body.innerHTML = formatMarkdown(text);
-    }
-    if (role === "user") {
       wrap.append(who, body);
     } else {
+      body.innerHTML = formatMarkdown(text);
       const avatar = document.createElement("img");
       avatar.className = "avatar";
       avatar.src = document.querySelector(".brand-mark img").src;
@@ -430,189 +347,48 @@ FINAL REMINDER, HIGHEST PRIORITY: keep every answer under 150 words and follow t
     }
     thread.appendChild(wrap);
     main.scrollTop = main.scrollHeight;
-    return body;
   }
 
-  function formatMarkdown(text) {
-    const escaped = text
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
-    const saved = [];
-    let linked = escaped
-      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-      .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (m, name, url) => {
-        if (!linkAllowed(url)) return name;
-        saved.push(`<a href="${url}" target="_blank" rel="noopener noreferrer">${name}</a>`);
-        return "\u0000" + (saved.length - 1) + "\u0000";
-      })
-      .replace(/https?:\/\/[^\s<>"')\u0000]+/g, (url) =>
-        linkAllowed(url)
-          ? `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`
-          : url);
-    linked = linked.replace(/\u0000(\d+)\u0000/g, (m, i) => saved[Number(i)]);
-    return linked
-      .split("\n")
-      .map((line) => {
-        if (/^#{1,6}\s+/.test(line)) {
-          return "<strong>" + line.replace(/^#{1,6}\s+/, "") + "</strong>";
-        }
-        if (/^[-*]\s+/.test(line)) {
-          return "&bull; " + line.replace(/^[-*]\s+/, "");
-        }
-        return line;
-      })
-      .join("<br>");
-  }
-
-  function showError(text) {
-    const body = addMsg("bot", text);
-    body.parentElement.classList.add("error");
-  }
-
-  async function loadEngine(modelId) {
-    loadBox.classList.remove("error", "hidden");
-    loadTitle.textContent = "Loading model";
-    loadStatus.textContent = "Fetching weights (cached after first visit)...";
-    barFill.style.width = "0%";
-    setHead("Loading model...");
-    input.disabled = true;
-    sendBtn.disabled = true;
-    newChatBtn.disabled = true;
-
-    try {
-      if (!navigator.gpu) {
-        throw new Error("This browser does not expose WebGPU. Use a recent Chrome, Edge, or Chrome-based browser.");
-      }
-      state.engine?.unload?.();
-      state.engine = null;
-      const engine = await webllm.CreateMLCEngine(modelId, {
-        initProgressCallback: (report) => {
-          loadStatus.textContent = report.text;
-          barFill.style.width = Math.round((report.progress || 0) * 100) + "%";
-        },
-      });
-      state.engine = engine;
-      state.messages = [];
-      thread.innerHTML = "";
-      addMsg("bot", GREETING);
-      showSuggestions();
-      loadBox.classList.add("hidden");
-      input.disabled = false;
-      newChatBtn.disabled = false;
-      setHead("Ready - running locally");
-      input.focus();
-    } catch (err) {
-      console.error(err);
-      loadBox.classList.add("error");
-      loadTitle.textContent = "Could not load the model";
-      loadStatus.textContent = err?.message || String(err);
-      setHead("Load failed");
-    }
-    refreshSend();
-  }
-
-  async function send() {
-    if (state.generating) { state.engine.interruptGenerate(); return; }
+  function send() {
     const text = input.value.trim();
-    if (!text || !state.engine || state.busy) return;
-
-    if (!isOnTopic(text)) {
-      input.value = "";
-      autoGrow();
-      addMsg("user", text);
-      addMsg("bot", OFF_TOPIC_REPLY);
-      refreshSend();
-      return;
-    }
-
-    const conversationId = state.conversationId;
-    state.busy = true;
-    suggestions.classList.add("hidden");
+    if (!text) return;
     input.value = "";
     autoGrow();
     addMsg("user", text);
-
-    const botBody = addMsg("bot", "");
-    const cursor = document.createElement("span");
-    cursor.className = "cursor";
-    botBody.appendChild(cursor);
-
-    state.messages.push({ role: "user", content: text });
-    state.generating = true;
-    refreshSend();
-
-    let reply = "";
-    try {
-      const stream = await state.engine.chat.completions.create({
-        messages: [{ role: "system", content: currentSystemPrompt() }, ...state.messages],
-        temperature: 0.7,
-        max_tokens: 380,
-        stream: true,
-      });
-      for await (const chunk of stream) {
-        if (conversationId !== state.conversationId) break;
-        const delta = chunk.choices[0]?.delta?.content || "";
-        if (delta) {
-          reply += delta;
-          botBody.innerHTML = formatMarkdown(reply);
-          botBody.appendChild(cursor);
-          main.scrollTop = main.scrollHeight;
-        }
-      }
-      if (conversationId === state.conversationId) {
-        state.messages.push({ role: "assistant", content: reply });
-      }
-    } catch (err) {
-      if (conversationId !== state.conversationId) return;
-      console.error(err);
-      if (!reply) botBody.parentElement.classList.add("error");
-      botBody.innerHTML = formatMarkdown(reply || (err?.message || "Something went wrong while generating."));
-    } finally {
-      cursor.remove();
-      state.generating = false;
-      state.busy = false;
-      refreshSend();
-      if (conversationId === state.conversationId) {
-        main.scrollTop = main.scrollHeight;
-        input.focus();
-      }
+    const reply = answerQuestion(text, state);
+    if (Object.hasOwn(reply, "program")) state.program = reply.program;
+    if (Object.hasOwn(reply, "pendingIntent")) state.pendingIntent = reply.pendingIntent;
+    addMsg("bot", reply.text);
+    if (reply.text === CLARIFY || reply.text === REPLIES.welcome || reply.text === REPLIES.overview) {
+      showSuggestions(["Student staff", "Professional staff", "Faculty"]);
+    } else {
+      suggestions.classList.add("hidden");
     }
+    refreshSend();
+    input.focus();
   }
 
-  sendBtn.addEventListener("click", send);
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
-      e.preventDefault();
-      send();
-    }
-  });
-  newChatBtn.addEventListener("click", () => {
-    state.conversationId++;
-    if (state.generating) state.engine.interruptGenerate();
-    state.generating = false;
-    // Keep busy until the interrupted stream settles; the engine handles one request at a time.
+  function resetChat() {
+    state.program = null;
+    state.pendingIntent = null;
     input.value = "";
     autoGrow();
-    refreshSend();
-    state.messages = [];
     thread.innerHTML = "";
     addMsg("bot", GREETING);
     showSuggestions();
+    refreshSend();
     input.focus();
-  });
-
-  try {
-    webllm = await import("https://esm.run/@mlc-ai/web-llm");
-    setHead("Choosing model...");
-    await loadEngine(MODEL_ID);
-  } catch (err) {
-    console.error(err);
-    loadBox.classList.add("error");
-    loadTitle.textContent = "Could not load the chat runtime";
-    loadStatus.textContent = err?.message || "The model runtime failed to download.";
-    setHead("Load failed");
   }
+  input.addEventListener("input", () => { autoGrow(); refreshSend(); });
+  sendBtn.addEventListener("click", send);
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
+      event.preventDefault();
+      send();
+    }
+  });
+  newChatBtn.addEventListener("click", resetChat);
+  resetChat();
 </script>
 </body>
 </html>

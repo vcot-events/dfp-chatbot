@@ -1,24 +1,32 @@
 # Dialogue for Peace Info Chatbot
 
-A fully client-side AI chatbot for the [Dialogue for Peace](https://transformation.ucsd.edu/initiatives/tritons-belong/d4p/index.html) initiative at UC San Diego. It answers questions about DFP fellowships, events, and programs using only the official Dialogue for Peace sources.
+A client-side information assistant for UC San Diego’s [Dialogue for Peace](https://transformation.ucsd.edu/our-work/community-belonging-and-dialogue/tritons-belong/dialogue-for-peace/index.html) initiative.
 
 ## How it works
 
-- The entire app is a single `index.html` file - no server, no API keys, no backend.
-- It runs the Llama 3.2 1B model locally in the visitor's browser via [WebLLM](https://webllm.mlc.ai/) and WebGPU.
-- On first visit, the model (~880 MB) downloads once and is cached by the browser; later visits load instantly.
-- Responses are grounded in an embedded Dialogue for Peace knowledge base, with verified outbound links only.
+- A single `index.html` contains the UI, sourced program facts, fixed response text, and deterministic intent routing.
+- No language model, model download, API key, WebGPU, backend, or external JavaScript dependency is needed.
+- Assistant replies are assembled only from authored text. User messages never become assistant prose, instructions, eligibility decisions, or claims about institutional policy.
+- Eligibility questions show the published role/employment requirements and dated application information. The assistant never decides whether a person qualifies. Race or other identity attributes are not used to select eligibility answers.
+- Only the selected fellowship and a pending question type persist in memory. New chat clears them. There is no profile, analytics, browser storage, or transmission of messages.
+- Unknown requests use a fixed fallback. Questions about accommodations or mistreatment use fixed contact responses without invented services, policies, guarantees, or investigations.
 
-## Running locally
+## Running and hosting
 
-Open `index.html` in a recent Chrome or Edge browser (WebGPU required).
+Open `index.html` in a modern browser, or serve it with `python3 -m http.server 8765 --bind 127.0.0.1`. Any static host can serve the app. JavaScript is required; a noscript notice provides the program link and contact address.
 
-## Hosting
+## Verification
 
-This is a static file, so it can be hosted on any static hosting service. GitHub Pages works as-is from this repository.
+Run `node --test tests/*.test.cjs` with a recent Node.js version (Node 18+).
 
-## Regression checks
+The suite checks UI controls and reset behavior, program separation, exact equality across 750 identity substitutions, 95 audit prompts repeated five times in two conversation states, and all 21 prompts from the original live audit. Repeating deterministic routing does not estimate statistical bias; exact output checks enforce the tested invariants.
 
-Run `node --test tests/chat.test.cjs` with Node.js 18 or later. These checks use a mocked DOM and model stream to cover input controls, topic filtering, and resetting during generation without downloading model weights. Real WebGPU inference still requires a browser smoke test.
+The original model audit and transcripts in `audit/` describe the previous generative version. `audit/IMPLEMENTATION.md` describes the replacement. Neither those baseline failures nor their historic counts are results for the new implementation.
 
-The embedded staff fellowship dates and closed application status were checked against the official Staff Fellowship Program and 2026 Application pages on October 27, 2026. The knowledge base is a static snapshot and needs periodic review.
+## Updating content
+
+Program facts were checked on **October 27, 2026** against the linked faculty, professional staff, and student staff pages. Replies explicitly label application status as a snapshot; they do not infer future cohorts. The faculty and student information were refreshed during this implementation, including faculty funding timing and the student program’s closed application window.
+
+Edit `PROGRAMS` for sourced facts, `REPLIES` for contact/fallback text, and `classifyIntent` for supported question types. Do not add user text interpolation, arbitrary generated prose, demographic rules, or individual eligibility judgments. Every new intent must map to authored content or a safe fallback. Run the full suite after changes.
+
+Content is source-checked project text, **not a claim of formal institutional approval**. Program owners should review the exact wording and sources before publication and whenever facts change. Fixed responses narrow possible output but do not remove the need to review the content and routing for fairness and accessibility.

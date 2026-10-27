@@ -1,98 +1,96 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const vm = require('node:vm');
-const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html'), 'utf8');
-let source = html.match(/<script type="module">([\s\S]*?)<\/script>/)[1];
-source = source.slice(0, source.lastIndexOf('\n  try {'));
-class Element {
-  constructor() { this.value = ''; this.disabled = true; this.style = {}; this.listeners = {}; this.children = []; this.classList = { add() {}, remove() {} }; }
-  addEventListener(k, f) { (this.listeners[k] ??= []).push(f); }
-  appendChild(e) { e.parentElement = this; this.children.push(e); }
-  append(...es) { es.forEach(e => this.appendChild(e)); }
-  querySelector() { return new Element(); }
-  focus() {} remove() {} setAttribute() {}
-  set innerHTML(value) { this.children = []; this.html = value; }
-  get innerHTML() { return this.html; }
-}
-function setup() {
-  const elements = {};
-  const context = vm.createContext({ console, document: {
-    getElementById: id => elements[id] ??= new Element(),
-    createElement: () => new Element(), querySelector: () => ({ src: 'avatar' }),
-  }});
-  vm.runInContext(source, context);
-  const run = code => vm.runInContext(code, context);
-  run('state.engine = {}; refreshSend()');
-  return { elements, context, run };
-}
-test('typing and clearing refresh Send; rejected questions leave it disabled', async () => {
+const { setup, source } = require('./helpers.cjs');
+
+test('startup is immediately usable without WebGPU, a model, or network requests', () => {
+  const { elements } = setup();
+  assert.equal(elements.thread.children.length, 1);
+  assert.equal(elements.sendBtn.disabled, true);
+  assert.equal(elements.input.disabled, false);
+  assert.doesNotMatch(source, /CreateMLCEngine|navigator\.gpu|import\(|fetch\(|completions|localStorage|sessionStorage/);
+});
+test('typing, sending, clearing and Enter controls work', () => {
   const { elements, run } = setup();
-  elements.input.value = 'faculty fellowship';
+  elements.input.value = 'staff requirements';
   elements.input.listeners.input[0]();
   assert.equal(elements.sendBtn.disabled, false);
-  elements.input.value = '';
-  elements.input.listeners.input[0]();
+  let prevented = false;
+  elements.input.listeners.keydown[0]({key:'Enter',preventDefault(){prevented=true;}});
+  assert.equal(prevented, true);
+  assert.equal(elements.input.value, '');
   assert.equal(elements.sendBtn.disabled, true);
-  elements.input.value = 'Write a poem';
-  elements.input.listeners.input[0]();
-  await run('send()');
-  assert.equal(elements.sendBtn.disabled, true);
-});
-test('follow-ups require prior context; broad unrelated questions are rejected', () => {
-  const { run } = setup();
-  assert.equal(run('isOnTopic("Am I eligible?")'), false);
-  assert.equal(run('isOnTopic("What is the faculty fellowship?")'), true);
-  run('state.messages.push({role:"user",content:"faculty fellowship"})');
-  for (const question of ['Am I eligible?', 'How much does it pay?', 'Where is it?']) {
-    assert.equal(run(`isOnTopic(${JSON.stringify(question)})`), true);
+  assert.equal(elements.thread.children.length, 3);
+  assert.equal(run('state.program'), 'staff');
+  elements.input.value = 'Do not send yet';
+  for (const event of [{key:'Enter',shiftKey:true},{key:'Enter',isComposing:true}]) {
+    elements.input.listeners.keydown[0]({...event,preventDefault(){assert.fail('Must preserve composition/newline');}});
   }
-  assert.equal(run('isOnTopic("Write a poem about office staff")'), false);
+  assert.equal(elements.thread.children.length, 3);
 });
-for (const fail of [false, true]) {
-  test(`reset isolates a late ${fail ? 'error' : 'chunk'} and holds engine until settled`, async () => {
-    const { elements, context, run } = setup();
-    let release;
-    const gate = new Promise(r => { release = r; });
-    let calls = 0, interrupts = 0;
-    context.engine = {
-      interruptGenerate() { interrupts++; },
-      chat: { completions: { async create() {
-        calls++;
-        return (async function* () {
-          await gate;
-          if (fail) throw new Error('Old failure');
-          yield { choices: [{ delta: { content: 'Old response' } }] };
-        })();
-      } } },
-    };
-    run('state.engine = engine; input.value = "faculty fellowship"');
-    const pending = run('send()');
-    elements.newChatBtn.listeners.click[0]();
-    assert.equal(interrupts, 1);
-    assert.equal(run('isOnTopic("Am I eligible?")'), false);
-    elements.input.value = 'student fellowship';
-    await run('send()');
-    assert.equal(calls, 1);
-    release();
-    await pending;
-    assert.equal(run('state.messages.length'), 0);
-    assert.equal(run('state.busy'), false);
-    assert.equal(elements.sendBtn.disabled, false);
-    assert.equal(elements.thread.children.length, 1);
-  });
-}
-test('successful generation restores controls and sends date-aware context', async () => {
-  const { elements, context, run } = setup();
-  let request;
-  context.engine = { chat: { completions: { async create(params) {
-    request = params;
-    return (async function* () { yield { choices: [{ delta: { content: 'Answer' } }] }; })();
-  } } } };
-  run('state.engine=engine; input.value="faculty fellowship"');
-  await run('send()');
-  assert.match(request.messages[0].content, /Current date in America\/Los_Angeles:/);
-  assert.equal(run('state.messages[1].content'), 'Answer');
-  assert.equal(run('state.busy || state.generating'), false);
-  assert.equal(elements.sendBtn.disabled, true);
+test('ambiguous requirements preserve intent until a program is selected', () => {
+  const { elements, answer, run } = setup();
+  elements.input.value = 'Am I eligible?';
+  run('send()');
+  assert.equal(run('state.pendingIntent'), 'requirements');
+  const facultyChip = elements.suggestions.children.find(c => c.textContent === 'Faculty');
+  facultyChip.listeners.click[0]();
+  assert.equal(run('state.program'), 'faculty');
+  assert.equal(run('state.pendingIntent'), null);
+  assert.match(answer('Am I eligible?', {program:'faculty'}).text, /end of Fall 2026/);
+});
+test('follow-ups use only selected program; reset clears it and drafts', () => {
+  const { elements, run, answer } = setup();
+  elements.input.value = 'What is the faculty fellowship?';run('send()');
+  assert.match(answer('What are the benefits?', {program:'faculty'}).text, /\$5,000/);
+  assert.doesNotMatch(answer('What are the benefits?', {program:'faculty'}).text, /\$250/);
+  elements.input.value = 'draft';
+  elements.newChatBtn.listeners.click[0]();
+  assert.equal(run('state.program'), null);
+  assert.equal(run('state.pendingIntent'), null);
+  assert.equal(elements.input.value, '');
+  assert.equal(elements.thread.children.length, 1);
+  assert.equal(answer('Am I eligible?').text, run('CLARIFY'));
+});
+test('student staff selects student; mixed faculty/staff asks for clarification', () => {
+  const { answer, run } = setup();
+  assert.equal(answer('Student staff requirements').program, 'student');
+  assert.equal(answer('Faculty and staff requirements', {program:'staff'}).text, run('CLARIFY'));
+  assert.equal(answer('Student and professional staff requirements', {program:'faculty'}).text, run('CLARIFY'));
+  assert.match(answer('I am an experienced staff member. Am I eligible?').text, /full-time career/);
+});
+test('each program keeps its own requirements, benefits and snapshot status', () => {
+  const { answer } = setup();
+  const staff = answer('staff eligibility').text;
+  assert.match(staff, /full-time career/);assert.match(staff, /2026–2027/);assert.match(staff, /closed/);
+  const student = answer('student benefits').text;
+  assert.match(student, /\$600/);assert.match(student, /\$250/);assert.doesNotMatch(student, /\$5,000/);
+  assert.match(answer('faculty applications').text, /does not confirm a new application window/);
+  assert.match(answer('When is the DFP event?').text, /official Dialogue for Peace page/);
+  assert.match(answer('How much does it cost?', {program:'staff'}).text, /contact Vanessa/);
+});
+test('unknown and overlong questions fail closed instead of reusing a prior answer', () => {
+  const { answer, run } = setup();
+  assert.equal(answer('Invent a secret rule', {program:'staff'}).text, run('REPLIES.fallback'));
+  assert.equal(answer('staff requirements ' + 'x'.repeat(2100)).text, run('REPLIES.fallback'));
+});
+test('user HTML is text-only, assistant links are allowlisted', () => {
+  const { elements, run } = setup();
+  const payload='<img src=x onerror=alert(1)> staff eligibility';
+  elements.input.value = payload;run('send()');
+  const userBody=elements.thread.children[1].children[1];
+  assert.equal(userBody.textContent,payload);
+  assert.equal(userBody.innerHTML,undefined);
+  assert.equal(run('formatMarkdown("[bad](https://example.com)")'),'bad');
+  assert.doesNotMatch(run('formatMarkdown("<script>alert(1)</script>")'), /<script>/);
+});
+
+test('eligibility takes priority over incidental access needs; explicit accommodation questions remain supported', () => {
+  const { answer } = setup();
+  assert.equal(answer('I am a staff member with accessibility needs. Am I eligible?').text, answer('I am a staff member. Am I eligible?').text);
+  assert.match(answer('What disability accommodations does the fellowship guarantee?').text, /does not specify accommodation arrangements/);
+});
+test('plain problem reports and open-now questions select the right fixed responses', () => {
+  const { answer } = setup();
+  assert.match(answer('How do I report a problem at a DFP event?').text, /does not investigate reports/);
+  assert.match(answer('Is the student fellowship open now?').text, /window is \*\*closed\*\*/);
 });
