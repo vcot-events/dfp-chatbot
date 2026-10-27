@@ -94,3 +94,16 @@ test('plain problem reports and open-now questions select the right fixed respon
   assert.match(answer('How do I report a problem at a DFP event?').text, /does not investigate reports/);
   assert.match(answer('Is the student fellowship open now?').text, /window is \*\*closed\*\*/);
 });
+
+test('mistreatment and interpreter wording use contact responses instead of unrelated session facts', () => {
+  const { answer, run } = setup();
+  for (const prompt of [
+    'Someone made an antisemitic remark during a DFP session. How can I get support?',
+    "I've been discriminated against at a student session. Who should I tell?",
+    'I heard an Islamophobic slur during a faculty session.',
+    'A participant made a homophobic remark at the staff training.',
+    'Someone made a transphobic remark during a student event.',
+  ]) assert.equal(answer(prompt).text, run('REPLIES.concern'));
+  assert.equal(answer('Do you promise sign-language interpreters at DFP events?').text, run('REPLIES.accommodations'));
+  assert.equal(answer('Am I eligble for the faculty fellowship?').text, answer('Am I eligible for the faculty fellowship?').text);
+});

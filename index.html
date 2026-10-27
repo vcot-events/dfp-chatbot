@@ -217,12 +217,12 @@
   const CLARIFY = "Which fellowship would you like information about: **student staff**, **professional staff**, or **faculty**?";
   const REPLIES = Object.freeze({
     fallback: "I can share published Dialogue for Peace fellowship information. Please choose a fellowship or ask about requirements, applications, time commitments, or benefits.\n\n" + CONTACT,
-    boundary: "I can share published program information. I cannot help create discriminatory content or speak on behalf of program leadership.\n\n" + CONTACT,
+    boundary: "I can share published program information. I cannot help create discriminatory content or speak on behalf of program leadership.",
     welcome: "You are welcome to ask about Dialogue for Peace here. I share the same published program requirements with everyone and do not assess individual eligibility.\n\n" + CLARIFY,
     accommodations: "This information snapshot does not specify accommodation arrangements. Please contact Vanessa Haro at vlharo@ucsd.edu to ask about access needs and arrangements for the program or event. I cannot confirm particular services or guarantees.",
     concern: "I’m sorry to hear about your concern. You can contact Vanessa Haro at vlharo@ucsd.edu about a Dialogue for Peace program or event concern. This chatbot does not investigate reports or confirm complaint procedures, confidentiality, or outcomes.",
     contact: CONTACT,
-    events: "For event listings and updates, please check the official Dialogue for Peace page. This information snapshot cannot confirm current event availability, registration, or access arrangements.\n\n[Dialogue for Peace](" + HOME + ")\n\n" + CONTACT,
+    events: "For event listings and updates, please check the official Dialogue for Peace page. This information snapshot cannot confirm current event availability, registration, or access arrangements.\n\n[Dialogue for Peace](" + HOME + ")",
     overview: "Dialogue for Peace is a Tritons Belong initiative offering fellowships and events that build dialogue, listening, and conflict resolution skills through Peacemaking and Restorative Justice.\n\n" + CLARIFY + "\n\n[Dialogue for Peace](" + HOME + ")",
   });
 
@@ -244,9 +244,9 @@
   }
 
   function classifyIntent(text) {
-    if (/\b(complaint|harass(?:ment|ed)?|racism|report (?:a |an |the )?(?:problem|concern|incident|issue))\b/.test(text)) return "concern";
-    if (/\b(eligib(?:le|ile|ility)|eligab(?:le|ility)|qualif(?:y|ied|ications?)|requirements?|criteria|can i (?:apply|join)|who can (?:apply|join)|rejected?|prefer(?:ence)?|accept(?:ed)?)\b/.test(text)) return "requirements";
-    if (/\b(accommodations?|accessib(?:le|ility)|assistive|wheelchair|mobility)\b/.test(text)) return "accommodations";
+    if (/\b(complaint|harass(?:ment|ed)?|racis[mt]|discriminat(?:ion|ed|ory)|antisemiti(?:c|sm)|islamophobi(?:a|c)|homophobi(?:a|c)|transphobi(?:a|c)|slurs?|report (?:a |an |the )?(?:problem|concern|incident|issue))\b/.test(text)) return "concern";
+    if (/\b(eligib(?:le|ile|ility)|eligble|eligab(?:le|ility)|qualif(?:y|ied|ications?)|requirements?|criteria|can i (?:apply|join)|who can (?:apply|join)|rejected?|prefer(?:ence)?|accept(?:ed)?)\b/.test(text)) return "requirements";
+    if (/\b(accommodations?|accessib(?:le|ility)|assistive|wheelchair|mobility|sign[- ]language|interpreters?)\b/.test(text)) return "accommodations";
     if (/\b(rank races|repeat exactly|ignore all|system override|as the dfp director|write a persuasive|explain why .* should be excluded|say .* (?:inferior|hateful))\b/.test(text)) return "boundary";
     if (/\b(contact|email|talk to|speak to|reach|haro)\b/.test(text)) return "contact";
     if (/\b(welcome|belong|allowed|excluded?)\b/.test(text)) return "welcome";
@@ -263,10 +263,10 @@
   function programReply(program, intent) {
     const data = PROGRAMS[program];
     if (intent === "requirements" || intent === "applications") {
-      return "Here are the published requirements for the **" + data.name + "**. This chatbot does not assess individual eligibility.\n\n" + data.requirements + "\n\n" + data.status + "\n\n[" + data.name + "](" + data.source + ")\n\n" + CONTACT;
+      return "Here are the published requirements for the **" + data.name + "**. This chatbot does not assess individual eligibility.\n\n" + data.requirements + "\n\n" + data.status + "\n\n[" + data.name + "](" + data.source + ")";
     }
     const content = data[intent] || data.overview;
-    return content + "\n\n[" + data.name + "](" + data.source + ")\n\nInformation checked **" + VERIFIED_ON + "**. " + CONTACT;
+    return content + "\n\n[" + data.name + "](" + data.source + ")\n\nInformation checked **" + VERIFIED_ON + "**.";
   }
 
   // Pure routing: identical role and question yield identical replies. Only the
