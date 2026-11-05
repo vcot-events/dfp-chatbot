@@ -1,4 +1,14 @@
-# GitHub Pages deployment
+# Current Sites deployment
+
+Site: https://dialogue-for-peace-chatbot.famedguide2.chatgpt.site
+Repository: https://github.com/vcot-events/dfp-chatbot
+
+Published November 5, 2026 through Sites with owner-only access. The deployed
+static assets contain only `index.html`; audit materials are excluded. All 16
+tests passed before deployment. The separate local `hosted-site/` checkout is
+ignored by this repository. GitHub pushes do not automatically redeploy Sites.
+
+# Previous GitHub Pages deployment
 
 Site: https://akshetha.github.io/dfp-chatbot/
 Repository: https://github.com/akshetha/dfp-chatbot
